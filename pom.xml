@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <modules>
+        <module>ashin-common</module>
+        <module>ashin-eureka</module>
+        <module>ashin-gateway</module>
+        <module>ashin-goods-service</module>
+        <module>ashin-order-service</module>
+        <module>ashin-search-data-sync-service</module>
+        <module>ashin-search-service</module>
+        <module>ashin-user-service</module>
+    </modules>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.1.18.RELEASE</version>
+        <relativePath/>
+    </parent>
+    <packaging>pom</packaging>
+
+    <groupId>com.ashin</groupId>
+    <artifactId>ashin-mall</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+        <java.version>1.8</java.version>
+        <spring.cloud-version>Greenwich.SR6</spring.cloud-version>
+        <com.alibaba.cloud>2.1.0.RELEASE</com.alibaba.cloud>
+        <elasticsearch.client>7.4.2</elasticsearch.client>
+        <mybatis.plus.version>3.1.1</mybatis.plus.version>
+    </properties>
+    <dependencyManagement>
+        <dependencies>
+            <!--spring cloud alibaba-->
+            <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+                <version>${com.alibaba.cloud}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring.cloud-version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+            </dependency>
+            <!-- Mysql 数据库 -->
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>${mysql.version}</version>
+            </dependency>
+            <!--            <dependency>-->
+            <!--                <groupId>org.mybatis</groupId>-->
+            <!--                <artifactId>mybatis</artifactId>-->
+            <!--                <version>${mybatis.version}</version>-->
+            <!--            </dependency>-->
+            <!--            <dependency>-->
+            <!--                <groupId>org.mybatis</groupId>-->
+            <!--                <artifactId>mybatis-spring</artifactId>-->
+            <!--                <version>${mybatis.spring.version}</version>-->
+            <!--            </dependency>-->
+            <!--            <dependency>-->
+            <!--                <groupId>com.github.pagehelper</groupId>-->
+            <!--                <artifactId>pagehelper-spring-boot-starter</artifactId>-->
+            <!--                <version>${pagehelper.version}</version>-->
+            <!--            </dependency>-->
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-boot-starter</artifactId>
+                <version>${mybatis.plus.version}</version>
+            </dependency>
+            <!--  通用mapper  -->
+            <dependency>
+                <groupId>tk.mybatis</groupId>
+                <artifactId>mapper-spring-boot-starter</artifactId>
+                <version>2.0.4</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.pagehelper</groupId>
+                <artifactId>pagehelper-spring-boot-starter</artifactId>
+                <version>1.2.3</version>
+            </dependency>
+            <!-- ElasticSearch -->
+            <dependency>
+                <groupId>org.elasticsearch.client</groupId>
+                <artifactId>elasticsearch-rest-high-level-client</artifactId>
+                <version>${elasticsearch.client}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.elasticsearch.client</groupId>
+                <artifactId>elasticsearch-rest-client</artifactId>
+                <version>${elasticsearch.client}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.elasticsearch</groupId>
+                <artifactId>elasticsearch</artifactId>
+                <version>${elasticsearch.client}</version>
+            </dependency>
+            <!-- FastJSON -->
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>fastjson</artifactId>
+                <version>1.2.30</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+</project>

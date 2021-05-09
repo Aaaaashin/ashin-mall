@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <!-- 页面meta -->
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>新大新商城管理系统</title>
+        <meta name="description" content="HEIMA商城管理系统">
+        <meta name="keywords" content="HEIMA商城管理系统">
+        <meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" name="viewport">
+        <!-- 引入样式 -->
+        <link rel="stylesheet" href="plugins/elementui/index.css">
+        <link rel="stylesheet" href="plugins/font-awesome/css/font-awesome.min.css">
+        <link rel="stylesheet" href="css/style.css">
+    </head>
+
+    <body class="hold-transition">
+        <div id="app">
+            <div class="content-header">
+                <h1>商品管理<small>商品管理</small></h1>
+                <el-breadcrumb separator-class="el-icon-arrow-right" class="breadcrumb">
+                    <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+                    <el-breadcrumb-item>商品管理</el-breadcrumb-item>
+                    <el-breadcrumb-item>商品管理</el-breadcrumb-item>
+                </el-breadcrumb>
+            </div>
+
+
+
+            <div class="app-container">
+                <div class="box">
+
+                    <div class="filter-container">
+                        <el-input placeholder="商品名称" v-model="pagination.queryString" style="width: 200px;" class="filter-item"></el-input>
+                        <el-button @click="pagination.currentPage=1;findPage()" class="dalfBut">查询</el-button>
+                        <el-button type="primary" class="butT" @click="handleCreate()">新建</el-button>
+                    </div>
+
+
+                    <el-table size="small" current-row-key="id" :data="dataList" border stripe highlight-current-row>
+                        <el-table-column prop="id" label="ID" align="center" width="50px"></el-table-column>
+                        <el-table-column prop="name" label="名称" align="center" width="410px"></el-table-column>
+                        <el-table-column label="品牌" align="center" width="80px">
+                            <template slot-scope="scope">
+                                <span>{{scope.row.brand}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="分类" align="center" width="80px">
+                            <template slot-scope="scope">
+                                <span>{{scope.row.category}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="price" label="价格" align="center" width="70px"></el-table-column>
+                        <el-table-column prop="num" label="数量" align="center" width="60px"></el-table-column>
+                        <el-table-column label="是否上架" align="center" width="80px">
+                            <template slot-scope="scope">
+                                <span>{{ scope.row.isMarketable == '0' ? '未上架' : scope.row.isMarketable == '1' ? '已上架' : '无'}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="状态" align="center" width="80px">
+                            <template slot-scope="scope">
+                                <span v-if="scope.row.status=='0'">
+                                    未审核
+                                </span>
+                                <span v-if="scope.row.status=='1'">
+                                    已审核
+                                </span>
+                                <span v-if="scope.row.status=='2'">
+                                    审核未通过
+                                </span>
+                                <span v-if="scope.row.status=='3'">
+                                    已删除
+                                </span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="操作" align="center">
+                            <template slot-scope="scope">
+                                <el-button type="primary" size="mini" @click="getInfo(scope.row)">详情</el-button>
+                                <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">编辑</el-button>
+                                <el-button type="primary" size="mini" @click="updateStatus(scope.row)">审核</el-button>
+                                <el-button type="success" size="mini" v-if="scope.row.isMarketable=='0'" @click="up(scope.row)">上架</el-button>
+                                <el-button type="warning" size="mini" v-if="scope.row.isMarketable=='1'" @click="down(scope.row)">下架</el-button>
+                                <el-button type="danger" size="mini" @click="handleDelete(scope.row)">删除</el-button>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                    <div class="pagination-container">
+                        <el-pagination
+                            class="pagiantion"
+                            @current-change="handleCurrentChange"
+                            :current-page="pagination.currentPage"
+                            :page-size="pagination.pageSize"
+                            layout="total, prev, pager, next, jumper"
+                            :total="pagination.total">
+                        </el-pagination>
+                    </div>
+                    <!-- 查看详情弹层 -->
+                    <el-dialog title="商品详情" :visible.sync="dialogGoodsInfoVisible">
+                        <el-form ref="dataInfoForm" :model="formData" label-position="right" label-width="100px">
+
+                            <el-row>
+                                <el-col :span="24">
+                                    <el-form-item label="商品名称 : ">
+                                        {{formData.name}}
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="12">
+                                    <el-form-item label="价格 : ">
+                                        {{formData.price}}
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="12">
+                                    <el-form-item label="数量 : ">
+                                        {{formData.num}}
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="12">
+                                    <el-form-item label="销量数 : ">
+                                        {{formData.saleNum}}
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="12">
+                                    <el-form-item label="评论数 : ">
+                                        {{formData.commentNum}}
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="12">
+                                    <el-form-item label="品牌 : ">
+                                        {{formData.brand}}
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="12">
+                                    <el-form-item label="分类 : ">
+                                        {{formData.category}}
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+
+                            <el-row>
+                                <el-col :span="12">
+                                    <el-form-item label="上架状态 :">
+                                        <span v-if="formData.isMarketable">上架</span>
+                                        <span v-if="!formData.isMarketable">下架</span>
+                                    </el-form-item>
+                                </el-col>
+
+                                <el-col :span="12">
+                                    <el-form-item label="审核状态 : ">
+                                        <span v-if="formData.status=='0'">未审核</span>
+                                        <span v-if="formData.status=='1'">审核通过</span>
+                                        <span v-if="formData.status=='2'">审核未通过</span>
+                                        <span v-if="formData.status=='3'">已删除</span>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+
+                            <el-row>
+                                <el-col :span="24">
+                                    <el-form-item label="规格 : ">
+                                        {{formData.spec}}
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+
+
+                            <el-row>
+                                <el-col :span="24">
+                                    <el-form-item label="图片 : ">
+                                        <img width="150px;" v-for="img in imgs" height="150px;" :src="img">
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="24">
+                                    <el-form-item label="描述 : ">
+                                        {{formData.caption}}
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                        </el-form>
+                        <div slot="footer" class="dialog-footer">
+                            <el-button @click="dialogGoodsInfoVisible = false">取消</el-button>
+                        </div>
+                    </el-dialog>
+                    <!-- 新增标签弹层 -->
+                    <el-dialog title="新增商品" :visible.sync="dialogGoodsAddVisible" width="70%">
+                        <el-form ref="dataAddForm" :model="addFormData" label-position="right"  label-width="120px">
+                            <el-row>
+                                <el-col :span="24">
+                                    <el-form-item label="商品名称 : ">
+                                        <el-input v-model="addFormData.name"/>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="12">
+                                    <el-form-item label="价格 : ">
+                                        <el-input v-model="addFormData.price" placeholder="单位"/>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="12">
+                                    <el-form-item label="数量 : ">
+                                        <el-input v-model="addFormData.num" />
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="24">
+                                    <el-form-item label="品牌 : ">
+                                        <el-select v-model="addFormData.brand" placeholder="请选择活动区域"  style="width: 100%;">
+                                            <el-option v-for="brand in brandData" :label="brand.name" :value="brand.name" ></el-option>
+                                        </el-select>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="24">
+                                    <el-form-item label="分类 : ">
+                                        <el-cascader v-model="category" @change="categoryChange" :options="categoryOptions" :props="cascadeOption" clearable style="width: 100%;"></el-cascader>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <!-- 规格 -->
+                            <el-row>
+                                <el-col :span="24" v-for="sp in specData">
+                                    <el-form-item v-for="(value,key) in sp" :label="key">
+                                        <el-radio-group  v-model="addFormData['spec_'+key]">
+                                            <el-radio border v-for="option in value" :label="option"></el-radio>
+                                        </el-radio-group>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="24">
+                                    <el-form-item label="图片 : ">
+                                        <el-upload
+                                                action="/image/fileupload"
+                                                name="uploadFile"
+                                                list-type="picture-card"
+                                                :on-success="uploadSuccess"
+                                                :on-preview="handlePictureCardPreview"
+                                                :on-remove="handleRemove">
+                                            <i class="el-icon-plus"></i>
+                                        </el-upload>
+                                        <el-dialog :visible.sync="dialogVisible">
+                                            <img width="100%" :src="dialogImageUrl" alt="">
+                                        </el-dialog>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="24">
+                                    <el-form-item label="描述 : ">
+                                        <el-input type="textarea" height="50px;" v-model="addFormData.caption" />
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                        </el-form>
+                        <div slot="footer" class="dialog-footer">
+                            <el-button @click="dialogGoodsAddVisible = false">取消</el-button>
+                            <el-button type="primary" @click="handleAdd()">确定</el-button>
+                        </div>
+                    </el-dialog>
+
+                </div>
+            </div>
+        </div>
+    </body>
+
+
+
+    <!-- 引入组件库 -->
+    <script src="js/vue.js"></script>
+    <script src="plugins/elementui/index.js"></script>
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script src="js/axios-0.18.0.js"></script>
+    <script>
+        var vue = new Vue({
+            el: '#app',
+            data:{
+                pagination: {//分页相关模型数据
+                  currentPage: 1,//当前页码
+                  pageSize:10,//每页显示的记录数
+                  total:0,//总记录数
+                  queryString:''//查询条件
+				},
+				dataList: [],//当前页要展示的分页列表数据
+                formData: {},//表单数据
+                addFormData:{},
+                dialogFormVisible: false,//增加表单是否可见
+                dialogFormVisible4Edit:false,//编辑表单是否可见
+                dialogGoodsInfoVisible:false,//商品详情Dialog是否可见
+                dialogGoodsAddVisible:false,
+                dialogImageUrl: '',
+                dialogVisible: false,
+                brands:[],
+                categorys:[],
+                brandData:[],
+                categoryOptions:[],
+                cascadeOption:{
+                    value:'id',
+                    label:'name',
+                    children:'children'
+                },
+                specData:null,
+                categoryIds:[],
+                images:'',
+                imgs:[]
+            },
+            //钩子函数，VUE对象初始化完成后自动执行
+            created() {
+                this.findPage();//VUE对象初始化完成后调用分页查询方法，完成分页查询
+                this.loadAllBrandAndCategory();
+            },
+            methods: {
+                //编辑
+                handleEdit() {
+
+                },
+                //添加
+                handleAdd () {
+                    this.addFormData.category1id = this.categoryIds[0];
+                    this.addFormData.category2id = this.categoryIds[1];
+                    this.addFormData.category3id = this.categoryIds[2];
+
+                    var spec = {};
+                    for(var k in this.addFormData){
+                        if(k.startsWith("spec_")){
+                            var _key = k.substring(5);
+                            spec[_key] = this.addFormData[k];
+                        }
+                    }
+                    this.addFormData.spec = JSON.stringify(spec);
+
+                    if(this.images != null && this.images.length > 0){
+                        this.addFormData.images = this.images.substring(1);
+                    }
+
+                    axios.post('/goods/add',this.addFormData).then(res=>{
+                       if(res.data.flag){
+                           this.$message.success(res.data.message);
+                           this.dialogGoodsAddVisible = false;
+                           this.findPage();
+                       }else{
+                           this.$message.error(res.data.message);
+                       }
+                    });
+
+                },
+                updateStatus(row){
+                    this.$confirm('信息确认无误, 请选择审核类型', '提示', {
+                        confirmButtonText: '审核通过',
+                        cancelButtonText: '审核不通过',
+                        type: 'success'
+                    }).then(() => {
+                        axios.put('/goods/status/'+row.id+"/1").then(res=>{
+                            if(res.data.flag){
+                                this.$message.success(res.data.message);
+                                this.findPage();
+                            }else{
+                                this.$message.error(res.data.message);
+                            }
+                        })
+                    }).catch(() => {
+                        axios.put('/goods/status/'+row.id+"/2").then(res=>{
+                            if(res.data.flag){
+                                this.$message.success(res.data.message);
+                                this.findPage();
+                            }else{
+                                this.$message.error(res.data.message);
+                            }
+                        })
+                    });
+                },
+
+                handleRemove(file, fileList) {
+                    var remove_fileurl = file.response.data;
+                    this.images = this.images.replace(","+remove_fileurl,'');
+
+                    axios.delete('/image/delete?fileurl='+remove_fileurl).then(res=>{
+                        if(res.data.flag){
+                            this.$message.success(res.data.flag);
+                        }
+                    })
+                },
+
+                handlePictureCardPreview(file) {
+                    this.dialogImageUrl = file.url;
+                    this.dialogVisible = true;
+                },
+
+                uploadSuccess(response,file,fileList){
+                    this.dialogImageUrl = response.data;
+                    this.images += ","+this.dialogImageUrl;
+                },
+
+                up(row){
+                    this.$confirm('您确认上架该商品吗?', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        axios.put('/goods/up/'+row.id).then(res=>{
+                            if(res.data.flag){
+                                this.$message.success(res.data.message);
+                                this.findPage();
+                            }else{
+                                this.$message.error(res.data.message);
+                            }
+                        })
+                    }).catch(() => {
+                        this.$message({
+                            type: 'info',
+                            message: '已取消'
+                        });
+                    });
+                },
+
+                down(row){
+                    this.$confirm('您确认下架该商品吗?', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        axios.put('/goods/down/'+row.id).then(res=>{
+                            if(res.data.flag){
+                                this.$message.success(res.data.message);
+                                this.findPage();
+                            }else{
+                                this.$message.error(res.data.message);
+                            }
+                        })
+                    }).catch(() => {
+                        this.$message({
+                            type: 'info',
+                            message: '已取消'
+                        });
+                    });
+                },
+                getInfo(row){
+                    this.dialogGoodsInfoVisible = true;
+                    axios.get('/goods/'+row.id).then(res=>{
+                        this.formData = res.data.data;
+                        this.imgs = this.formData.images.split(",");
+                    })
+                },
+                //分页查询
+                findPage() {
+                    axios.get("/goods/findPage?currentPage="+this.pagination.currentPage+"&pageSize="+this.pagination.pageSize+"&queryString="+this.pagination.queryString)
+                        .then((res)=>{
+                            this.pagination.total = res.data.total;
+                            this.dataList = res.data.rows;
+                    });
+                },
+
+                // 重置表单
+                resetForm() {
+                    this.addFormData = {};//重置数据
+                    this.images = '';
+                    this.dialogImageUrl = '';
+                    this.categoryIds = [];
+                },
+                // 弹出添加窗口
+                handleCreate() {
+                    //弹出新增窗口
+                    this.dialogGoodsAddVisible = true;
+                    this.resetForm();
+
+                    axios.get('/category/findCategoryWithLevel').then(res=>{
+                       if(res.data.flag){
+                           this.categoryOptions = res.data.data;
+                       }
+                    });
+                },
+
+                // 弹出编辑窗口
+                handleUpdate(row) {
+
+                },
+
+                //切换页码
+                handleCurrentChange(currentPage) {
+                    //设置最新的页码
+                    this.pagination.currentPage = currentPage;
+                    //重新调用findPage方法进行分页查询
+                    this.findPage();
+                },
+
+                // 删除
+                handleDelete(row) {//row其实是一个json对象
+                    this.$confirm('确认删除该商品吗', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        axios.delete('/goods/'+row.id).then(res=>{
+                            if(res.data.flag){
+                                this.$message.success(res.data.message);
+                                this.findPage();
+                            }else{
+                                this.$message.error(res.data.message);
+                            }
+                        })
+                    }).catch(() => {
+                        this.$message({
+                            type: 'info',
+                            message: '已取消删除'
+                        });
+                    });
+                },
+
+                categoryChange(ids){
+                    axios.get('/spec/findAllSpecWithOptions?category3id='+ids[2]).then(res=>{
+                        if(res.data.flag){
+                            this.specData = res.data.data;
+                        }
+                    });
+
+                    for (var k in this.addFormData){
+                        if(k.startsWith("spec_")){
+                            delete this.addFormData[k];
+                        }
+                    }
+
+                },
+
+                loadAllBrandAndCategory(){
+                    axios.get('/brand/findAll').then(res=>{
+                        if(res.data.flag){
+                            for (var i = 0; i <res.data.data.length; i++) {
+                                var brand = res.data.data[i];
+                                this.brands[brand.id] = brand.name;
+
+                                this.brandData = res.data.data;
+                            }
+                        }
+                    });
+
+                    axios.get('/category/findAll').then(res=>{
+                        if(res.data.flag){
+                            for (var i = 0; i <res.data.data.length; i++) {
+                                var cate = res.data.data[i];
+                                this.categorys[cate.id] = cate.name;
+                            }
+                        }
+                        console.log(this.categorys[1]);
+                    });
+                }
+            }
+        })
+    </script>
+</html>

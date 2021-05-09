@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=9; IE=8; IE=7; IE=EDGE">
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7"/>
+    <title>结算页</title>
+    <link rel="stylesheet" type="text/css" href="css/webbase.css"/>
+    <link rel="stylesheet" type="text/css" href="css/pages-getOrderInfo.css"/>
+    <script src="js/vue.js" type="application/javascript"></script>
+    <script src="js/axios.js" type="application/javascript"></script>
+    <script src="js/base.js" type="application/javascript"></script>
+</head>
+<body>
+<div id="app">
+    <!--head-->
+    <div class="top">
+        <div class="py-container">
+            <div class="shortcut">
+                <ul class="fl">
+                    <li class="f-item">爱思乐欢迎您！</li>
+                    <li class="f-item">请登录　<span><a href="#">免费注册</a></span></li>
+                </ul>
+                <ul class="fr">
+                    <li class="f-item">我的订单</li>
+                    <li class="f-item space"></li>
+                    <li class="f-item">我的爱思乐</li>
+                    <li class="f-item space"></li>
+                    <li class="f-item">爱思乐会员</li>
+                    <li class="f-item space"></li>
+                    <li class="f-item">企业采购</li>
+                    <li class="f-item space"></li>
+                    <li class="f-item">关注爱思乐</li>
+                    <li class="f-item space"></li>
+                    <li class="f-item">客户服务</li>
+                    <li class="f-item space"></li>
+                    <li class="f-item">网站导航</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="cart py-container">
+        <!--logoArea-->
+        <div class="logoArea">
+            <div class="fl logo"><span class="title">结算页</span></div>
+            <div class="fr search">
+                <form class="sui-form form-inline">
+                    <div class="input-append">
+                        <input type="text" type="text" class="input-error input-xxlarge" placeholder="爱思乐自营"/>
+                        <button class="sui-btn btn-xlarge btn-danger" type="button">搜索</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!--主内容-->
+        <div class="checkout py-container">
+            <div class="checkout-tit">
+                <h4 class="tit-txt">填写并核对订单信息</h4>
+            </div>
+            <div class="checkout-steps">
+                <!--收件人信息-->
+                <div class="step-tit">
+                    <h5>收件人信息<span><a data-toggle="modal" data-target=".edit" data-keyboard="false" class="newadd">新增收货地址</a></span>
+                    </h5>
+                </div>
+                <div class="step-cont">
+                    <div class="addressInfo">
+                        <ul class="addr-detail">
+                            <li class="addr-item">
+                                <div v-for="(address,index) in addressList">
+                                    <div :class="index==flag1?'con name selected':'con name'">
+                                        <a href="javascript:;" @click="checkAddr(index)">{{address.contact}}<span
+                                                title="点击取消选择"/>&nbsp;</a></div>
+                                    <div class="con address">{{address.contact}} {{address.address}} <span>{{address.mobile}}</span>
+                                        <span class="base" v-if="index==0">默认地址</span>
+                                        <span class="edittext"><a data-toggle="modal" data-target=".edit"
+                                                                  data-keyboard="false">编辑</a>&nbsp;&nbsp;<a
+                                                href="javascript:;">删除</a></span>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </div>
+                            </li>
+                        </ul>
+                        <!--添加地址-->
+                        <div tabindex="-1" role="dialog" data-hasfoot="false" class="sui-modal hide fade edit">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" data-dismiss="modal" aria-hidden="true" class="sui-close">
+                                            ×
+                                        </button>
+                                        <h4 id="myModalLabel" class="modal-title">添加收货地址</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form action="" class="sui-form form-horizontal">
+                                            <div class="control-group">
+                                                <label class="control-label">收货人：</label>
+                                                <div class="controls">
+                                                    <input type="text" class="input-medium">
+                                                </div>
+                                            </div>
+                                            <div class="control-group">
+                                                <label class="control-label">详细地址：</label>
+                                                <div class="controls">
+                                                    <input type="text" class="input-large">
+                                                </div>
+                                            </div>
+                                            <div class="control-group">
+                                                <label class="control-label">联系电话：</label>
+                                                <div class="controls">
+                                                    <input type="text" class="input-medium">
+                                                </div>
+                                            </div>
+                                            <div class="control-group">
+                                                <label class="control-label">邮箱：</label>
+                                                <div class="controls">
+                                                    <input type="text" class="input-medium">
+                                                </div>
+                                            </div>
+                                            <div class="control-group">
+                                                <label class="control-label">地址别名：</label>
+                                                <div class="controls">
+                                                    <input type="text" class="input-medium">
+                                                </div>
+                                                <div class="othername">
+                                                    建议填写常用地址：<a href="#" class="sui-btn btn-default">家里</a>　<a href="#"
+                                                                                                               class="sui-btn btn-default">父母家</a>　<a
+                                                        href="#" class="sui-btn btn-default">公司</a>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" data-ok="modal" class="sui-btn btn-primary btn-large">确定
+                                        </button>
+                                        <button type="button" data-dismiss="modal"
+                                                class="sui-btn btn-default btn-large">取消
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--确认地址-->
+                    </div>
+                    <div class="hr"></div>
+                </div>
+                <div class="hr"></div>
+                <!--支付和送货-->
+                <div class="payshipInfo">
+                    <div class="step-tit">
+                        <h5>支付方式</h5>
+                    </div>
+                    <div class="step-cont">
+                        <ul class="payType">
+                            <li class="selected">支付宝付款<span title="点击取消选择"></span></li>
+                            <li>微信付款<span title="点击取消选择"></span></li>
+                            <li>货到付款<span title="点击取消选择"></span></li>
+                        </ul>
+                    </div>
+                    <div class="hr"></div>
+                    <div class="step-tit">
+                        <h5>送货清单</h5>
+                    </div>
+                    <div class="step-cont">
+                        <ul class="send-detail">
+                            <li>
+                                <div class="sendGoods">
+                                    <ul class="yui3-g">
+                                        <li class="yui3-u-1-6">
+                                            <span><img :src="goods.image"/></span>
+                                        </li>
+                                        <li class="yui3-u-7-12">
+                                            <div class="desc">{{goods.name}}</div>
+                                            <div class="seven">7天无理由退货</div>
+                                        </li>
+                                        <li class="yui3-u-1-12">
+                                            <div class="price">￥{{goods.price}}</div>
+                                        </li>
+                                        <!--										<li class="yui3-u-1-12">-->
+                                        <!--											<div class="num">X1</div>-->
+                                        <!--										</li>-->
+                                        <li class="yui3-u-1-12">
+                                            <div class="exit">有货</div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
+                            <li></li>
+                            <li></li>
+                        </ul>
+                    </div>
+                    <div class="hr"></div>
+                </div>
+                <div class="linkInfo">
+                    <div class="step-tit">
+                        <h5>发票信息</h5>
+                    </div>
+                    <div class="step-cont">
+                        <span>普通发票（电子）</span>
+                        <span>个人</span>
+                        <span>明细</span>
+                    </div>
+                </div>
+                <div class="cardInfo">
+                    <div class="step-tit">
+                        <h5>使用优惠/抵用</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="order-summary">
+            <div class="static fr">
+                <div class="list">
+                    <span><i class="number">1</i>件商品，总商品金额</span>
+                    <em class="allprice">¥{{goods.price}}</em>
+                </div>
+                <div class="list">
+                    <span>优惠券：</span>
+                    <em class="money">0.00</em>
+                </div>
+                <div class="list">
+                    <span>运费：</span>
+                    <em class="transport">0.00</em>
+                </div>
+            </div>
+        </div>
+        <div class="clearfix trade">
+            <div class="fc-price">应付金额:　<span class="price">¥{{order.payment}}</span></div>
+            <div class="fc-receiverInfo">寄送至: {{order.receiverAreaName}} 收货人：{{order.receiver}}
+                {{order.receiverMobile}}
+            </div>
+        </div>
+        <div class="submit">
+            <a class="sui-btn btn-danger btn-xlarge" href="javascript:" @click="submitOrder">提交订单</a>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript" src="js/plugins/jquery/jquery.min.js"></script>
+<script type="text/javascript" src="js/plugins/jquery.easing/jquery.easing.min.js"></script>
+<script type="text/javascript" src="js/plugins/sui/sui.min.js"></script>
+<script type="text/javascript" src="components/ui-modules/nav/nav-portal-top.js"></script>
+<script type="text/javascript" src="js/pages/getOrderInfo.js"></script>
+</body>
+<script>
+    new Vue({
+        el: "#app",
+        data: {
+            flag1: 0,
+            addressList: [],
+            goods: {},
+            order: {
+                payment: 0,
+                receiverAreaName: "",
+                receiver: "",
+                receiverMobile: "",
+                goodId: 0,
+                picPath: "",
+                paymentType: 1
+            }
+        },
+        methods: {
+            findInfoById(goodId) {
+                axios.get(urls.find_order_info_byid + goodId, {}).then(res => {
+                    if (!res.data.flag) {
+                        alert(res.data.message);
+                    } else {
+                        this.goods = res.data.data.goods;
+                        this.addressList = res.data.data.addressList;
+                        // 准备订单中的商品信息
+                        if (this.goods) {
+                            this.order.payment = this.goods.price;
+                            this.order.goodId = this.goods.id;
+                            this.order.picPath = this.goods.image;
+                        }
+                        // 准备订单中的收货人信息
+                        if (this.addressList && this.addressList.length > 0) {
+                            this.order.receiver = this.addressList[0].contact; // address mobile
+                            this.order.receiverAreaName = this.addressList[0].address; // address mobile
+                            this.order.receiverMobile = this.addressList[0].mobile; // address mobile
+                        }
+                    }
+                })
+            },
+            submitOrder() {
+                axios.post(urls.submit_order, this.order).then(resp => {
+                    if (!resp.data.flag) {
+                        alert(resp.data.message);
+                    } else {
+                        debugger;
+                        window.location.href = "pay.html?orderId=" + resp.data.data;
+                    }
+                });
+            },
+            checkAddr(i) {
+                this.flag1 = i;
+                if (this.addressList && this.addressList.length > 0) {
+                    this.order.receiver = this.addressList[i].contact; // address mobile
+                    this.order.receiverAreaName = this.addressList[i].address; // address mobile
+                    this.order.receiverMobile = this.addressList[i].mobile; // address mobile
+                }
+            }
+        },
+        //页面加载时,执行查询
+        created: function () {
+            let goodId = GetRequest()['goodId']
+            this.findInfoById(goodId);
+        }
+    })
+</script>
+</html>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ashin.mapper.CategoryMapper">
+
+    <resultMap id="categoryResultMap" type="com.ashin.pojo.Category">
+        <id property="id" column="c1id"></id>
+        <result property="name" column="c1name"></result>
+
+        <collection property="children" ofType="com.ashin.pojo.Category">
+            <id property="id" column="c2id"></id>
+            <result property="name" column="c2name"></result>
+
+            <collection property="children" ofType="com.ashin.pojo.Category">
+                <id property="id" column="c3id"></id>
+                <result property="name" column="c3name"></result>
+            </collection>
+
+        </collection>
+    </resultMap>
+
+    <select id="findCategoryWithLevel" resultMap="categoryResultMap">
+        SELECT
+            c1.id c1id , c1.name c1name,
+            c2.id c2id , c2.name c2name,
+            c3.id c3id , c3.name c3name
+        FROM
+            tb_category c1 ,
+            tb_category c2 ,
+            tb_category c3
+        WHERE
+            c1.id = c2.parent_id AND c2.id = c3.parent_id ;
+    </select>
+
+</mapper>

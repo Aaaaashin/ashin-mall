@@ -1,0 +1,12 @@
+server:
+  port: 9201
+elasticsearch:
+  host: 192.168.1.2
+  port: 9200
+spring:
+  application:
+    name: search-service
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.1.2:8848
