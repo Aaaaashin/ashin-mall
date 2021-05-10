@@ -11,7 +11,7 @@ spring:
       globalcors:
         cors-configurations:
           '[/**]': # 匹配所有请求
-            allowedOrigins: "*" #跨域处理 允许所有的域
+            allowedOrigins: "*" #跨域处理 允许所有的域x
             allowedMethods: "*" # 支持的方法
             allowedHeaders: "*" # 支持的方法
       routes:

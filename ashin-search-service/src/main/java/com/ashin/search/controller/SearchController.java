@@ -9,7 +9,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/search")
-@CrossOrigin("*")//处理跨域问题
+//@CrossOrigin("*")//处理跨域问题
 public class SearchController {
     @Autowired
     private SearchService searchService;
