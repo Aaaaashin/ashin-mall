@@ -10,14 +10,14 @@ spring:
     password: root
   main:
     allow-bean-definition-overriding: true #当遇到同样名字的时候，是否允许覆盖注册
-#  cloud:
-#    nacos:
-#      discovery:
-#        server-addr: 192.168.1.2:8848
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.1.2:8848
 mybatis:
   configuration:
     map-underscore-to-camel-case: true
-  type-aliases-package: com.itheima.pojo
+  type-aliases-package: com.ashin.pojo
 fileurl: http://localhost:${server.port}/img/goods/
 #eureka:
 #  client:
